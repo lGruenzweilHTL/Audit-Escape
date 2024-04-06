@@ -6,6 +6,7 @@ public class ActionHandler : MonoBehaviour
     [SerializeField] private PlayerData player;
     [SerializeField] private ActionData actionPrefab;
     [SerializeField] private Transform cardParent;
+    [SerializeField] private GameObject auditGame;
 
     public UnityEvent<GameAction, bool> OnActionFinished;
 
@@ -21,7 +22,7 @@ public class ActionHandler : MonoBehaviour
     {
         OnActionFinished?.Invoke(currentAction, accepted);
 
-        if (currentAction.Type == ActionType.Audit) Debug.Log("Audit");
+        if (currentAction.Type == ActionType.Audit) auditGame.SetActive(true);
         NextAction();
     }
     private void NextAction()

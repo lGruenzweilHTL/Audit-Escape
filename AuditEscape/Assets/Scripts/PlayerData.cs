@@ -56,4 +56,11 @@ public class PlayerData : MonoBehaviour
             if (aggression >= 100) Debug.Log("Game Over");
         });
     }
+
+    public void MoveAggression(int value)
+    {
+        aggression += value;
+        ui.UpdateAggression(aggression);
+    }
+    public bool IsOnWatchlist() => aggression >= 80;
 }
