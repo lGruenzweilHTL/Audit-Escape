@@ -14,21 +14,22 @@ public class UI : MonoBehaviour
     {
         cleanMoney.text = clean + "$";
         dirtyMoney.text = dirty + "$";
-        //passiveMoney.text = passive + "$/action";
-        //passiveLaundering.text = laundering + "$/action";
+        passiveMoney.text = passive + "$/action";
+        passiveLaundering.text = laundering + "$/action";
     }
 
     public void UpdateAggression(int value)
     {
-        // 4 is the conversion rate for non-watchlist
-        if (value <= 20)
+        aggressionSliderFill.gameObject.SetActive(value > 0);
+
+        if (value <= 50)
         {
-            aggressionSlider.value = Map(value, 0, 20, 0, 80);
+            aggressionSlider.value = Map(value, 0, 50, 0, 80);
             aggressionSliderFill.color = normalColor;
         }
         else
         {
-            aggressionSlider.value = Map(value, 20, 100, 80, 100);
+            aggressionSlider.value = Map(value, 50, 100, 80, 100);
             aggressionSliderFill.color = watchlistColor;
         }
     }

@@ -6,6 +6,7 @@ public class ActionData : MonoBehaviour
 {
     [SerializeField] private TMP_Text header;
     [SerializeField] private TMP_Text description;
+    [SerializeField] private TMP_Text prosCons;
     [SerializeField] private Button acceptButton;
     [SerializeField] private Button denyButton;
 
@@ -32,6 +33,16 @@ public class ActionData : MonoBehaviour
             ActionType.GetWorker => $"Hire a worker that will make you {action.Ammount}$ of clean money per action",
             ActionType.GetLaunderer => $"Hire a worker that will launder {action.Ammount}$ per action",
             ActionType.Audit => "You are getting audited.\nWatch out!",
+            _ => ""
+        };
+        prosCons.text = action.Type switch
+        {
+            ActionType.GetMoney => $"\n<color=\"green\">+{action.Ammount}$",
+            ActionType.LaunderMoney => $"\n<color=\"green\">+{action.Ammount}$\n<color=\"red\">+5 Aggression",
+            ActionType.LaunderAll => "",
+            ActionType.GetWorker => $"\n<color=\"green\">+{action.Ammount}$/action",
+            ActionType.GetLaunderer => $"\n<color=\"green\">+{action.Ammount}$/action\n<color=\"red\">+1 Aggression",
+            ActionType.Audit => "",
             _ => ""
         };
 

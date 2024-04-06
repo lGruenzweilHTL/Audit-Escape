@@ -34,22 +34,26 @@ public class PlayerData : MonoBehaviour
                     break;
                 case ActionType.GetLaunderer:
                     launderingPerAction += action.Ammount;
+                    aggression += 1;
                     break;
                 case ActionType.LaunderAll:
-                    cleanMoney = dirtyMoney;
+                    cleanMoney += dirtyMoney;
                     dirtyMoney = 0;
+                    aggression += 10;
                     break;
             }
 
             // Passive
-            int moneyLeftToLaunder = Mathf.Max(0, dirtyMoney - launderingPerAction);
-            dirtyMoney -= moneyLeftToLaunder;
-            cleanMoney += moneyLeftToLaunder;
+            int launderedMoneyThisTurn = dirtyMoney - Mathf.Max(0, dirtyMoney - launderingPerAction);
+            dirtyMoney -= launderedMoneyThisTurn;
+            cleanMoney += launderedMoneyThisTurn;
 
             cleanMoney += moneyPerAction;
 
             ui.UpdateStats(cleanMoney, dirtyMoney, moneyPerAction, launderingPerAction);
             ui.UpdateAggression(aggression);
+
+            if (aggression >= 100) Debug.Log("Game Over");
         });
     }
 }
