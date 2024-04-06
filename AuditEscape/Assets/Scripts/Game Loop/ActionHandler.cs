@@ -31,7 +31,7 @@ public class ActionHandler : MonoBehaviour
 
         var obj = Instantiate(actionPrefab, cardParent);
 
-        currentAction = GetWeightedAction(player.aggression);
+        currentAction = GetWeightedAction(player.Aggression);
         obj.Init(currentAction, this);
         actionObject = obj.gameObject;
     }

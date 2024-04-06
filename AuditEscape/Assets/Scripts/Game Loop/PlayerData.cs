@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerData : MonoBehaviour
 {
@@ -10,7 +11,17 @@ public class PlayerData : MonoBehaviour
 
     public int moneyPerAction { get; private set; }
     public int launderingPerAction { get; private set; }
-    public int aggression { get; private set; }
+    private int aggression;
+    public int Aggression
+    {
+        get => aggression;
+        private set
+        {
+            aggression = value;
+            ui.UpdateAggression(aggression);
+            if (aggression >= 100) SceneManager.LoadScene(2);
+        }
+    }
 
     private void Start()
     {
@@ -27,19 +38,19 @@ public class PlayerData : MonoBehaviour
                     break;
                 case ActionType.LaunderMoney:
                     dirtyMoney += action.Ammount;
-                    aggression += 5;
+                    Aggression += 5;
                     break;
                 case ActionType.GetWorker:
                     moneyPerAction += action.Ammount;
                     break;
                 case ActionType.GetLaunderer:
                     launderingPerAction += action.Ammount;
-                    aggression += 1;
+                    Aggression += 1;
                     break;
                 case ActionType.LaunderAll:
                     cleanMoney += dirtyMoney;
                     dirtyMoney = 0;
-                    aggression += 10;
+                    Aggression += 10;
                     break;
             }
 
@@ -51,16 +62,9 @@ public class PlayerData : MonoBehaviour
             cleanMoney += moneyPerAction;
 
             ui.UpdateStats(cleanMoney, dirtyMoney, moneyPerAction, launderingPerAction);
-            ui.UpdateAggression(aggression);
-
-            if (aggression >= 100) Debug.Log("Game Over");
         });
     }
 
-    public void MoveAggression(int value)
-    {
-        aggression += value;
-        ui.UpdateAggression(aggression);
-    }
-    public bool IsOnWatchlist() => aggression >= 80;
+    public void MoveAggression(int value) => Aggression += value;
+    public bool IsOnWatchlist() => Aggression >= 80;
 }
