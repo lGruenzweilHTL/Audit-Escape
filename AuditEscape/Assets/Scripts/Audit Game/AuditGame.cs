@@ -46,15 +46,22 @@ public class AuditGame : MonoBehaviour
             if (player.IsOnWatchlist()) player.MoveAggression(-30);
             else player.MoveAggression(-10);
 
+            ResetFlashes();
             gameObject.SetActive(false);
-            return;
         }
 
         if (number != correctNumber)
         {
             // Lost
             player.MoveAggression(15);
+
+            ResetFlashes();
             gameObject.SetActive(false);
         }
+    }
+
+    public void ResetFlashes()
+    {
+        foreach (var img in buttonFlashes) img.color = new(img.color.r, img.color.g, img.color.b, 0f);
     }
 }
