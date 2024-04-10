@@ -1,20 +1,53 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class ActionHandler : MonoBehaviour
 {
+    public static SerializedAction AUDIT_ACTION = new()
+    {
+        Title = "Audit",
+        Description = "You are getting audited. Watch out!",
+        CleanMoneyAdded = 0,
+        DirtyMoneyAdded = 0,
+        AggressionGained = 0,
+        IsPassive = false,
+        CanDeny = false,
+        Pros = { },
+        Cons = { },
+        Percentage = 0 // Getting assigned dynamically
+    };
+
+    [SerializeField] private SerializedAction[] actions;
+
     [SerializeField] private PlayerData player;
     [SerializeField] private ActionData actionPrefab;
     [SerializeField] private Transform cardParent;
     [SerializeField] private GameObject auditGame;
 
-    public UnityEvent<GameAction, bool> OnActionFinished;
+    [SerializeField] private AnimationCurve auditCurve;
 
-    private GameAction currentAction;
+    public UnityEvent<SerializedAction, bool> OnActionFinished;
+
+    private SerializedAction currentAction;
     private GameObject actionObject;
+
+    public Dictionary<string, SerializedAction> ActionMap = new();
 
     private void Start()
     {
+        // Build ActionMap
+        for (int i = 0; i < actions.Length; i++)
+        {
+            SerializedAction a = actions[i];
+            a.Description = a.Description.Replace("{0}", a.CleanMoneyAdded.ToString()).Replace("{1}", a.DirtyMoneyAdded.ToString()).Replace("{2}", a.AggressionGained.ToString());
+            for (int j = 0; j < a.Pros.Length; j++) a.Pros[j] = a.Pros[j].Replace("{0}", a.CleanMoneyAdded.ToString()).Replace("{1}", a.DirtyMoneyAdded.ToString()).Replace("{2}", a.AggressionGained.ToString());
+            for (int j = 0; j < a.Cons.Length; j++) a.Cons[j] = a.Cons[j].Replace("{0}", a.CleanMoneyAdded.ToString()).Replace("{1}", a.DirtyMoneyAdded.ToString()).Replace("{2}", a.AggressionGained.ToString());
+
+            ActionMap.Add(a.Title, a);
+        }
+
         NextAction();
     }
 
@@ -22,7 +55,7 @@ public class ActionHandler : MonoBehaviour
     {
         OnActionFinished?.Invoke(currentAction, accepted);
 
-        if (currentAction.Type == ActionType.Audit) auditGame.SetActive(true);
+        if (currentAction.Title == "Audit") auditGame.SetActive(true);
         NextAction();
     }
     private void NextAction()
@@ -31,20 +64,30 @@ public class ActionHandler : MonoBehaviour
 
         var obj = Instantiate(actionPrefab, cardParent);
 
-        currentAction = GetWeightedAction(player.Aggression);
+        currentAction = GetAction(player.Aggression);
         obj.Init(currentAction, this);
         actionObject = obj.gameObject;
     }
 
-    private GameAction GetWeightedAction(int aggression)
+    private SerializedAction GetAction(int aggression)
     {
-        int value = Random.Range(0, 90 + aggression / 5);
+        AUDIT_ACTION.Percentage = aggression;
+        float maxPercentage = AUDIT_ACTION.Percentage;
+        float countedPercentage = 0;
 
-        if (value == 0) return new() { Type = ActionType.LaunderAll, Ammount = 0 };
-        if (value <= 30) return new() { Type = ActionType.GetMoney, Ammount = 100 };
-        else if (value <= 50) return new() { Type = ActionType.LaunderMoney, Ammount = 1000 };
-        else if (value <= 70) return new() { Type = ActionType.GetWorker, Ammount = 10 };
-        else if (value <= 90) return new() { Type = ActionType.GetLaunderer, Ammount = 100 };
-        else return new() { Type = ActionType.Audit, Ammount = 0 };
+        for (int i = 0; i < ActionMap.Count; i++) maxPercentage += ActionMap.Values.ToArray()[i].Percentage;
+
+        float random = Random.Range(0, maxPercentage);
+
+        for (int i = 0; i < ActionMap.Count; i++)
+        {
+            SerializedAction currentAction = ActionMap.Values.ToArray()[i];
+            float percent = currentAction.Percentage;
+            if (random >= countedPercentage && random < countedPercentage + percent) return currentAction;
+
+            countedPercentage += percent;
+        }
+
+        return AUDIT_ACTION;
     }
 }

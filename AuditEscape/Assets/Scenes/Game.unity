@@ -1628,10 +1628,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b55597725b2995a43bbd4d2bf9d121ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actions:
+  - Title: Get Money
+    Description: Earn {0}$ immediately
+    Pros:
+    - +{0}$
+    Cons: []
+    CleanMoneyAdded: 100
+    DirtyMoneyAdded: 0
+    AggressionGained: 0
+    CanDeny: 1
+    IsPassive: 0
+    Percentage: 50
+  - Title: Launder Money
+    Description: Earn {1}$ by laundering money
+    Pros:
+    - +{1}$
+    Cons:
+    - +{2} aggression
+    CleanMoneyAdded: 0
+    DirtyMoneyAdded: 1000
+    AggressionGained: 10
+    CanDeny: 1
+    IsPassive: 0
+    Percentage: 50
+  - Title: Hire Worker
+    Description: Hire a worker that will make {0}$/action
+    Pros:
+    - +{0}$/action
+    Cons: []
+    CleanMoneyAdded: 10
+    DirtyMoneyAdded: 0
+    AggressionGained: 0
+    CanDeny: 1
+    IsPassive: 1
+    Percentage: 20
+  - Title: Hire Launderer
+    Description: Hire a worker that will launder {1}$/action
+    Pros:
+    - +{1}$/action
+    Cons:
+    - +{2} aggression
+    CleanMoneyAdded: 0
+    DirtyMoneyAdded: 100
+    AggressionGained: 5
+    CanDeny: 1
+    IsPassive: 1
+    Percentage: 20
   player: {fileID: 891610744}
   actionPrefab: {fileID: 3318423724898093153, guid: cbd5041a3c0f65a4ea195eb2ecd3bcfe, type: 3}
   cardParent: {fileID: 2397710869493687122}
   auditGame: {fileID: 1452878328}
+  auditCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   OnActionFinished:
     m_PersistentCalls:
       m_Calls: []

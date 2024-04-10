@@ -25,34 +25,24 @@ public class PlayerData : MonoBehaviour
 
     private void Start()
     {
+        //throw new System.NotImplementedException();
         actionHandler.OnActionFinished.AddListener((action, accepted) =>
         {
-            if (!accepted || action.Type == ActionType.Audit)
-                return;
+            if (!accepted) return;
 
             // Active
-            switch (action.Type)
+            Aggression += action.AggressionGained;
+            if (action.IsPassive)
             {
-                case ActionType.GetMoney:
-                    cleanMoney += action.Ammount;
-                    break;
-                case ActionType.LaunderMoney:
-                    dirtyMoney += action.Ammount;
-                    Aggression += 5;
-                    break;
-                case ActionType.GetWorker:
-                    moneyPerAction += action.Ammount;
-                    break;
-                case ActionType.GetLaunderer:
-                    launderingPerAction += action.Ammount;
-                    Aggression += 1;
-                    break;
-                case ActionType.LaunderAll:
-                    cleanMoney += dirtyMoney;
-                    dirtyMoney = 0;
-                    Aggression += 10;
-                    break;
+                moneyPerAction += action.CleanMoneyAdded;
+                launderingPerAction += action.DirtyMoneyAdded;
             }
+            else
+            {
+                cleanMoney += action.CleanMoneyAdded;
+                dirtyMoney += action.DirtyMoneyAdded;
+            }
+
 
             // Passive
             int launderedMoneyThisTurn = dirtyMoney - Mathf.Max(0, dirtyMoney - launderingPerAction);

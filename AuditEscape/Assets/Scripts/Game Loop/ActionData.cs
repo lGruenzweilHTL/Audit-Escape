@@ -10,41 +10,25 @@ public class ActionData : MonoBehaviour
     [SerializeField] private Button acceptButton;
     [SerializeField] private Button denyButton;
 
-    public void Init(GameAction action, ActionHandler actionHandler)
+    public void Init(SerializedAction action, ActionHandler actionHandler)
     {
-        if (action.Type == ActionType.Audit)
-            denyButton.gameObject.SetActive(false);
+        if (!action.CanDeny) denyButton.gameObject.SetActive(false);
 
-        header.text = action.Type switch
+        header.text = action.Title;
+        description.text = action.Description;
+
+        string prosCons = "";
+        if (action.Pros != null && action.Pros.Length > 0)
         {
-            ActionType.GetMoney => "Earn money",
-            ActionType.LaunderMoney => "Launder money",
-            ActionType.LaunderAll => "Launder money",
-            ActionType.GetWorker => "Hire worker",
-            ActionType.GetLaunderer => "Hire worker",
-            ActionType.Audit => "AUDIT",
-            _ => ""
-        };
-        description.text = action.Type switch
+            prosCons += "<color=\"green\">";
+            foreach (string pro in action.Pros) prosCons += pro + '\n';
+        }
+        if (action.Cons != null && action.Cons.Length > 0)
         {
-            ActionType.GetMoney => $"Earn {action.Ammount}$ immediately",
-            ActionType.LaunderMoney => $"Earn {action.Ammount}$ by laundering money",
-            ActionType.LaunderAll => $"Immediately launder all your money",
-            ActionType.GetWorker => $"Hire a worker that will make you {action.Ammount}$ of clean money per action",
-            ActionType.GetLaunderer => $"Hire a worker that will launder {action.Ammount}$ per action",
-            ActionType.Audit => "You are getting audited.\nWatch out!",
-            _ => ""
-        };
-        prosCons.text = action.Type switch
-        {
-            ActionType.GetMoney => $"\n<color=\"green\">+{action.Ammount}$",
-            ActionType.LaunderMoney => $"\n<color=\"green\">+{action.Ammount}$\n<color=\"red\">+5 Aggression",
-            ActionType.LaunderAll => "",
-            ActionType.GetWorker => $"\n<color=\"green\">+{action.Ammount}$/action",
-            ActionType.GetLaunderer => $"\n<color=\"green\">+{action.Ammount}$/action\n<color=\"red\">+1 Aggression",
-            ActionType.Audit => "",
-            _ => ""
-        };
+            prosCons += "<color=\"red\">";
+            foreach (string con in action.Cons) prosCons += con + '\n';
+        }
+        this.prosCons.text = prosCons;
 
         acceptButton.onClick.AddListener(() => actionHandler.Continue(true));
         denyButton.onClick.AddListener(() => actionHandler.Continue(false));
