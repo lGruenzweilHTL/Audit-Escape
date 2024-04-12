@@ -1,10 +1,19 @@
+using UnityEngine;
+
 [System.Serializable]
 public struct SerializedAction
 {
     public string Title;
-    [UnityEngine.Tooltip("Replace the clean money with \"{0}\", the dirty money with \"{1}\" and the aggression with \"{2}\"")] public string Description;
-    [UnityEngine.Tooltip("Replace the clean money with \"{0}\", the dirty money with \"{1}\" and the aggression with \"{2}\"")] public string[] Pros;
-    [UnityEngine.Tooltip("Replace the clean money with \"{0}\", the dirty money with \"{1}\" and the aggression with \"{2}\"")] public string[] Cons;
+
+    [Tooltip("Replace the clean money with \"{0}\", the dirty money with \"{1}\" and the aggression with \"{2}\""), TextArea(3, 8)] 
+    public string Description;
+
+    [Tooltip("Replace the clean money with \"{0}\", the dirty money with \"{1}\" and the aggression with \"{2}\"")] 
+    public string[] Pros;
+
+    [Tooltip("Replace the clean money with \"{0}\", the dirty money with \"{1}\" and the aggression with \"{2}\"")] 
+    public string[] Cons;
+
     public int CleanMoneyAdded;
     public int DirtyMoneyAdded;
     public int AggressionGained;

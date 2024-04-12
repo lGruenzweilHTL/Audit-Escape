@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -16,7 +14,7 @@ public class ActionHandler : MonoBehaviour
         CanDeny = false,
         Pros = { },
         Cons = { },
-        Percentage = 0 // Getting assigned dynamically
+        Percentage = 20 // Multiplier for actual value
     };
 
     [SerializeField] private SerializedAction[] actions;
@@ -33,8 +31,6 @@ public class ActionHandler : MonoBehaviour
     private SerializedAction currentAction;
     private GameObject actionObject;
 
-    public Dictionary<string, SerializedAction> ActionMap = new();
-
     private void Start()
     {
         // Build ActionMap
@@ -45,10 +41,16 @@ public class ActionHandler : MonoBehaviour
             for (int j = 0; j < a.Pros.Length; j++) a.Pros[j] = a.Pros[j].Replace("{0}", a.CleanMoneyAdded.ToString()).Replace("{1}", a.DirtyMoneyAdded.ToString()).Replace("{2}", a.AggressionGained.ToString());
             for (int j = 0; j < a.Cons.Length; j++) a.Cons[j] = a.Cons[j].Replace("{0}", a.CleanMoneyAdded.ToString()).Replace("{1}", a.DirtyMoneyAdded.ToString()).Replace("{2}", a.AggressionGained.ToString());
 
-            ActionMap.Add(a.Title, a);
+            actions[i] = a;
         }
 
         NextAction();
+    }
+
+    [ContextMenu("Start Audit")]
+    public void StartAudit()
+    {
+        auditGame.SetActive(true);
     }
 
     public void Continue(bool accepted)
@@ -58,9 +60,16 @@ public class ActionHandler : MonoBehaviour
         if (currentAction.Title == "Audit") auditGame.SetActive(true);
         NextAction();
     }
-    private void NextAction()
+    private async void NextAction()
     {
-        if (actionObject != null) Destroy(actionObject);
+        if (actionObject != null)
+        {
+            Destroy(actionObject, 1.1f);
+
+            await System.Threading.Tasks.Task.Delay(100); // Wait for button animation
+
+            actionObject.GetComponent<Animator>().SetTrigger("MoveOut");
+        }
 
         var obj = Instantiate(actionPrefab, cardParent);
 
@@ -71,17 +80,16 @@ public class ActionHandler : MonoBehaviour
 
     private SerializedAction GetAction(int aggression)
     {
-        AUDIT_ACTION.Percentage = aggression;
-        float maxPercentage = AUDIT_ACTION.Percentage;
+        float maxPercentage = AUDIT_ACTION.Percentage * aggression * auditCurve.Evaluate(aggression / 100f);
         float countedPercentage = 0;
 
-        for (int i = 0; i < ActionMap.Count; i++) maxPercentage += ActionMap.Values.ToArray()[i].Percentage;
+        for (int i = 0; i < actions.Length; i++) maxPercentage += actions[i].Percentage;
 
         float random = Random.Range(0, maxPercentage);
 
-        for (int i = 0; i < ActionMap.Count; i++)
+        for (int i = 0; i < actions.Length; i++)
         {
-            SerializedAction currentAction = ActionMap.Values.ToArray()[i];
+            SerializedAction currentAction = actions[i];
             float percent = currentAction.Percentage;
             if (random >= countedPercentage && random < countedPercentage + percent) return currentAction;
 

@@ -56,5 +56,5 @@ public class PlayerData : MonoBehaviour
     }
 
     public void MoveAggression(int value) => Aggression += value;
-    public bool IsOnWatchlist() => Aggression >= 80;
+    public bool IsOnWatchlist() => Aggression >= 50;
 }

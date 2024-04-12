@@ -30,7 +30,17 @@ public class ActionData : MonoBehaviour
         }
         this.prosCons.text = prosCons;
 
-        acceptButton.onClick.AddListener(() => actionHandler.Continue(true));
-        denyButton.onClick.AddListener(() => actionHandler.Continue(false));
+        acceptButton.onClick.AddListener(() =>
+        {
+            actionHandler.Continue(true);
+            acceptButton.enabled = false;
+            denyButton.enabled = false;
+        });
+        denyButton.onClick.AddListener(() =>
+        {
+            actionHandler.Continue(false);
+            acceptButton.enabled = false;
+            denyButton.enabled = false;
+        });
     }
 }
