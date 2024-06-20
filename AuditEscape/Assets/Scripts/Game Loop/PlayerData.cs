@@ -1,60 +1,56 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlayerData : MonoBehaviour
-{
+public class PlayerData : MonoBehaviour {
     [SerializeField] private ActionHandler actionHandler;
     [SerializeField] private UI ui;
+    [SerializeField] private PlayerStatsObject stats;
+    [Space, SerializeField] private int watchlistThreshold = 50;
 
-    public int cleanMoney { get; private set; }
-    public int dirtyMoney { get; private set; }
+    public int Aggression {
+        get => stats.aggression;
+        private set => stats.aggression = value;
+    }
 
-    public int moneyPerAction { get; private set; }
-    public int launderingPerAction { get; private set; }
-    private int aggression;
-    public int Aggression
-    {
-        get => aggression;
-        private set
-        {
-            aggression = value;
-            ui.UpdateAggression(aggression);
-            if (aggression >= 100) SceneManager.LoadScene(2);
+    private void Start() {
+        actionHandler.OnActionFinished.AddListener(OnActionFinished);
+    }
+
+    private void OnActionFinished(SerializedAction action, bool accepted) {
+        if (!accepted) return;
+
+        // Active
+        MoveAggression(action.AggressionGained);
+
+        if (action.IsPassive) {
+            stats.passiveMoney += action.CleanMoneyAdded;
+            stats.passiveLaundering += action.DirtyMoneyAdded;
         }
+        else {
+            stats.cleanMoney += action.CleanMoneyAdded;
+            stats.dirtyMoney += action.DirtyMoneyAdded;
+        }
+
+        int dirtyMoney = stats.dirtyMoney,
+            launderingPerAction = stats.passiveLaundering * stats.workerEfficiency,
+            moneyPerAction = stats.passiveMoney * stats.workerEfficiency;
+            
+        // Passive
+        stats.cleanMoney += moneyPerAction;
+            
+        int launderedMoneyThisTurn = dirtyMoney - Mathf.Max(0, dirtyMoney - launderingPerAction);
+        stats.dirtyMoney -= launderedMoneyThisTurn;
+        stats.cleanMoney += launderedMoneyThisTurn;
+
+        ui.UpdateStats(stats.cleanMoney, stats.dirtyMoney, moneyPerAction, launderingPerAction);
     }
 
-    private void Start()
-    {
-        //throw new System.NotImplementedException();
-        actionHandler.OnActionFinished.AddListener((action, accepted) =>
-        {
-            if (!accepted) return;
+    public void MoveAggression(int value) {
+        Aggression += value;
 
-            // Active
-            Aggression += action.AggressionGained;
-            if (action.IsPassive)
-            {
-                moneyPerAction += action.CleanMoneyAdded;
-                launderingPerAction += action.DirtyMoneyAdded;
-            }
-            else
-            {
-                cleanMoney += action.CleanMoneyAdded;
-                dirtyMoney += action.DirtyMoneyAdded;
-            }
-
-
-            // Passive
-            int launderedMoneyThisTurn = dirtyMoney - Mathf.Max(0, dirtyMoney - launderingPerAction);
-            dirtyMoney -= launderedMoneyThisTurn;
-            cleanMoney += launderedMoneyThisTurn;
-
-            cleanMoney += moneyPerAction;
-
-            ui.UpdateStats(cleanMoney, dirtyMoney, moneyPerAction, launderingPerAction);
-        });
+        ui.UpdateAggression(Aggression);
+        if (Aggression >= 100) SceneManager.LoadScene(2);
     }
 
-    public void MoveAggression(int value) => Aggression += value;
-    public bool IsOnWatchlist() => Aggression >= 50;
+    public bool IsOnWatchlist() => Aggression >= watchlistThreshold;
 }

@@ -1,22 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEditor.Timeline.Actions.MenuPriority;
+using Random = UnityEngine.Random;
 
 public class ActionHandler : MonoBehaviour
 {
-    public static SerializedAction AUDIT_ACTION = new()
-    {
-        Title = "Audit",
-        Description = "You are getting audited. Watch out!",
-        CleanMoneyAdded = 0,
-        DirtyMoneyAdded = 0,
-        AggressionGained = 0,
-        IsPassive = false,
-        CanDeny = false,
-        Pros = { },
-        Cons = { },
-        Percentage = 20 // Multiplier for actual value
-    };
-
     [SerializeField] private SerializedAction[] actions;
 
     [SerializeField] private PlayerData player;
@@ -25,14 +16,32 @@ public class ActionHandler : MonoBehaviour
     [SerializeField] private GameObject auditGame;
 
     [SerializeField] private AnimationCurve auditCurve;
+    [SerializeField] private float auditMultiplier;
 
     public UnityEvent<SerializedAction, bool> OnActionFinished;
 
     private SerializedAction currentAction;
     private GameObject actionObject;
 
+    private bool previousWasAudit = false;
+
+    private static SerializedAction _auditAction = new SerializedAction
+    {
+        Title = "Audit",
+        Description = "You are getting audited. Watch out!",
+        CleanMoneyAdded = 0,
+        DirtyMoneyAdded = 0,
+        AggressionGained = 0,
+        IsPassive = false,
+        CanDeny = false,
+    };
+
+    private static readonly int MoveOut = Animator.StringToHash("MoveOut");
+
     private void Start()
     {
+        _auditAction.Percentage = auditMultiplier;
+
         // Build ActionMap
         for (int i = 0; i < actions.Length; i++)
         {
@@ -68,7 +77,7 @@ public class ActionHandler : MonoBehaviour
 
             await System.Threading.Tasks.Task.Delay(100); // Wait for button animation
 
-            actionObject.GetComponent<Animator>().SetTrigger("MoveOut");
+            actionObject.GetComponent<Animator>().SetTrigger(MoveOut);
         }
 
         var obj = Instantiate(actionPrefab, cardParent);
@@ -80,7 +89,8 @@ public class ActionHandler : MonoBehaviour
 
     private SerializedAction GetAction(int aggression)
     {
-        float maxPercentage = AUDIT_ACTION.Percentage * aggression * auditCurve.Evaluate(aggression / 100f);
+        float maxPercentage = _auditAction.Percentage * aggression * auditCurve.Evaluate(aggression / 100f);
+        if (previousWasAudit) maxPercentage = 0;
         float countedPercentage = 0;
 
         for (int i = 0; i < actions.Length; i++) maxPercentage += actions[i].Percentage;
@@ -91,11 +101,35 @@ public class ActionHandler : MonoBehaviour
         {
             SerializedAction currentAction = actions[i];
             float percent = currentAction.Percentage;
-            if (random >= countedPercentage && random < countedPercentage + percent) return currentAction;
+            if (random >= countedPercentage && random < countedPercentage + percent)
+            {
+                previousWasAudit = false;
+                return currentAction;
+            }
 
             countedPercentage += percent;
         }
 
-        return AUDIT_ACTION;
+        previousWasAudit = true;
+        return _auditAction;
+    }
+
+
+    // TODO: implement replacement process with this function
+    private static string ReplaceMultiple(string s, params (string, string)[] replaceData) {
+        StringBuilder result = new(s);
+
+        foreach (var replacement in replaceData)
+        {
+            int index;
+            while ((index = result.ToString().IndexOf(replacement.Item1, System.StringComparison.Ordinal)) != -1)
+            {
+                result.Remove(index, replacement.Item1.Length);
+                result.Insert(index, replacement.Item2);
+            }
+        }
+
+        return result.ToString();
+
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class AuditGame : MonoBehaviour
@@ -10,24 +11,32 @@ public class AuditGame : MonoBehaviour
     [SerializeField] private PlayerData player;
     [SerializeField] private Image[] buttonFlashes;
     [SerializeField] private Button[] buttons;
+    
+    [Header("Aggression Values")]
+    [SerializeField] private int aggressionWonNoWl = -10;
+    [SerializeField] private int aggressionWonWl = -30;
+    [SerializeField] private float aggressionMultiplierLost = 50;
+
+
     private Queue<int> sequence;
 
-    bool onLastSequence = false;
-    bool sequenceFinished = true;
-    int registeredButtonsThisSeqence = 0;
+    private bool isLastSequence;
+    private bool sequenceFinished = true;
+    private int registeredButtonsThisSequence;
+    private static readonly int FlashAnimation = Animator.StringToHash("Flash");
 
     private async void OnEnable()
     {
-        sequence = new();
+        sequence = new Queue<int>();
         sequenceFinished = true;
         for (int i = 0; i < NUM_SEQUENCES; i++)
         {
             while (!sequenceFinished) await Task.Yield();
             sequenceFinished = false;
-            registeredButtonsThisSeqence = 0;
+            registeredButtonsThisSequence = 0;
             ResetFlashes();
 
-            foreach (var item in buttons) item.enabled = false;
+            foreach (Button item in buttons) item.enabled = false;
 
             await Task.Delay(1000);
 
@@ -37,32 +46,31 @@ public class AuditGame : MonoBehaviour
         }
     }
 
-    private async void PlaySequence(Queue<int> sequence)
+    private async void PlaySequence(Queue<int> seq)
     {
-        for (int i = 0; i < sequence.Count; i++)
+        for (int i = 0; i < seq.Count; i++)
         {
-            int number = sequence.ToArray()[i];
-            buttonFlashes[number].GetComponent<Animator>().SetTrigger("Flash");
-            if (i < sequence.Count - 1) await Task.Delay(1500);
+            int number = seq.ToArray()[i];
+            buttonFlashes[number].GetComponent<Animator>().SetTrigger(FlashAnimation);
+            if (i < seq.Count - 1) await Task.Delay(1500);
         }
 
-        foreach (var item in buttons) item.enabled = true;
+        foreach (Button item in buttons) item.enabled = true;
     }
     public void RegisterButton(int number)
     {
-        buttonFlashes[number].GetComponent<Animator>().SetTrigger("Flash");
+        buttonFlashes[number].GetComponent<Animator>().SetTrigger(FlashAnimation);
 
-        int correctNumber = sequence.ToArray()[registeredButtonsThisSeqence];
-        registeredButtonsThisSeqence++;
+        int correctNumber = sequence.ToArray()[registeredButtonsThisSequence];
+        registeredButtonsThisSequence++;
 
-        onLastSequence = sequence.Count == NUM_SEQUENCES;
-        sequenceFinished = registeredButtonsThisSeqence == sequence.Count;
+        isLastSequence = sequence.Count == NUM_SEQUENCES;
+        sequenceFinished = registeredButtonsThisSequence == sequence.Count;
 
-        if (number == correctNumber && onLastSequence && sequenceFinished)
+        if (number == correctNumber && isLastSequence && sequenceFinished)
         {
             // Won
-            if (player.IsOnWatchlist()) player.MoveAggression(-30);
-            else player.MoveAggression(-10);
+            player.MoveAggression(player.IsOnWatchlist() ? aggressionWonWl : aggressionWonNoWl);
 
             ResetFlashes();
             gameObject.SetActive(false);
@@ -71,15 +79,21 @@ public class AuditGame : MonoBehaviour
         if (number != correctNumber)
         {
             // Lost
-            player.MoveAggression(20);
+            player.MoveAggression(GetAggressionOnLost());
 
             ResetFlashes();
             gameObject.SetActive(false);
         }
     }
 
-    public void ResetFlashes()
+    private int GetAggressionOnLost()
     {
-        foreach (var img in buttonFlashes) img.color = new(img.color.r, img.color.g, img.color.b, 0f);
+        int progress = sequence.Count;
+        return (int)(1f / progress * aggressionMultiplierLost);
+    }
+
+    private void ResetFlashes()
+    {
+        foreach (Image img in buttonFlashes) img.color = new Color(img.color.r, img.color.g, img.color.b, 0f);
     }
 }

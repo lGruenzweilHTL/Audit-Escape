@@ -1,37 +1,50 @@
+using System;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI : MonoBehaviour
-{
+public class UI : MonoBehaviour {
+    public static UI Instance { get; private set; }
+
+    private void Awake() {
+        if (Instance != null && Instance != this) Destroy(gameObject);
+        else Instance = this;
+    }
+    
     [SerializeField] private TMP_Text cleanMoney, dirtyMoney, passiveMoney, passiveLaundering;
     [Space, SerializeField] private Slider aggressionSlider;
     [SerializeField] private Image aggressionSliderFill;
     [SerializeField] private Color normalColor;
     [SerializeField] private Color watchlistColor;
 
-    public void UpdateStats(int clean, int dirty, int passive, int laundering)
-    {
+    public void UpdateStats(PlayerStatsObject stats) => UpdateStats(stats.cleanMoney, stats.dirtyMoney,
+        stats.passiveMoney, stats.passiveLaundering);
+    public void UpdateStats(int clean, int dirty, int passive, int laundering) {
         cleanMoney.text = clean + "$";
         dirtyMoney.text = dirty + "$";
         passiveMoney.text = passive + "$/action";
         passiveLaundering.text = laundering + "$/action";
     }
 
-    public void UpdateAggression(int value)
-    {
+    public void UpdateStats(int clean, int dirty, int basePassive, int bonusPassive, int baseLaundering,
+        int bonusLaundering) {
+        
+    }
+
+    public void UpdateAggression(int value) {
         aggressionSliderFill.gameObject.SetActive(value > 0);
 
-        if (value <= 50)
-        {
+        if (value <= 50) {
             aggressionSlider.value = Map(value, 0, 50, 0, 80);
             aggressionSliderFill.color = normalColor;
         }
-        else
-        {
+        else {
             aggressionSlider.value = Map(value, 50, 100, 80, 100);
             aggressionSliderFill.color = watchlistColor;
         }
     }
-    private float Map(float s, float a1, float a2, float b1, float b2) => b1 + (s - a1) * (b2 - b1) / (a2 - a1);
+
+    private static float Map(float s, float a1, float a2, float b1, float b2) => b1 + (s - a1) * (b2 - b1) / (a2 - a1);
 }
