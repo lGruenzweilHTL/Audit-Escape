@@ -30,6 +30,7 @@ The fine needs to be high enough that you don't want your workers to quit
 - Can reduce audit difficulty with money (bribes)
 - Increase workers happiness (happiness increases efficiency)
 - Meth (increase worker efficiency drastically for 10 actions)
+- Decrease passive suspicion
     
 ## Cards
 - Pay your workers
@@ -44,3 +45,9 @@ One of these events appears every 8-15 actions
 - Increase worker efficiency
 - Decrease worker efficiency
 - Shop sales
+
+
+# Roadmap
+- Make the shop upgrades actually do something
+- Implement random events
+- Make Happiness and paying system

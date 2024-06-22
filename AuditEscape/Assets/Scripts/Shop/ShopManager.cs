@@ -1,16 +1,15 @@
-using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
 public class ShopManager : MonoBehaviour {
-    private const int UPGRADE_THRESHOLD = 1;
-
-    private enum ShopItem {
-        AuditDifficulty, WorkerEfficiency, WorkerHappiness
-    }
-
     [SerializeField] private PlayerStatsObject playerStats;
     [SerializeField] private GameObject shopWindow;
+
+    [Header("Upgrade Thresholds"), SerializeField]
+    private int auditDifficultyUpgrade = 1;
+        [SerializeField] private int workerEfficiencyUpgrade = 1,
+        workerHappinessUpgrade = 1,
+        passiveSuspicionUpgrade = -1;
 
     public void ToggleShopWindow() {
         UI.Instance.UpdateStats(playerStats);
@@ -31,18 +30,21 @@ public class ShopManager : MonoBehaviour {
 
         playerStats.cleanMoney -= cost;
         
-        switch ((ShopItem)item) {
-            case ShopItem.AuditDifficulty:
-                playerStats.auditDifficultyDecrease += UPGRADE_THRESHOLD;
+        switch (item) {
+            case 0: // AuditDifficulty
+                playerStats.auditDifficultyDecrease += auditDifficultyUpgrade;
                 break;
-            case ShopItem.WorkerEfficiency:
-                playerStats.workerEfficiency += UPGRADE_THRESHOLD;
+            case 1: // WorkerEfficiency
+                playerStats.workerEfficiency += workerEfficiencyUpgrade;
                 break;
-            case ShopItem.WorkerHappiness:
-                playerStats.workerHappiness += UPGRADE_THRESHOLD;
+            case 2: // WorkerHappiness
+                playerStats.workerHappiness += workerHappinessUpgrade;
+                break;
+            case 3: // PassiveSuspicion
+                playerStats.passiveSuspicion += passiveSuspicionUpgrade;
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(item), item, null);
+                throw new System.ArgumentOutOfRangeException(nameof(item), item, null);
         }
     }
 }

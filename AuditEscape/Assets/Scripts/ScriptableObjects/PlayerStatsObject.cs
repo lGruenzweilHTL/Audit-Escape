@@ -27,4 +27,7 @@ public class PlayerStatsObject : ScriptableObject {
 
     [Tooltip("The relative decrease of audit difficulty")]
     public float auditDifficultyDecrease = 0;
+
+    [Tooltip("The suspicion you get every action (even if it was denied)")]
+    public int passiveSuspicion = 2;
 }
