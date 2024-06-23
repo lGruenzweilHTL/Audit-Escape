@@ -17,6 +17,8 @@ public class PlayerData : MonoBehaviour {
     }
 
     private void OnActionFinished(SerializedAction action, bool accepted) {
+        MoveAggression(stats.passiveSuspicion);
+        
         if (!accepted) return;
 
         // Active
@@ -32,8 +34,8 @@ public class PlayerData : MonoBehaviour {
         }
 
         int dirtyMoney = stats.dirtyMoney,
-            launderingPerAction = stats.passiveLaundering * stats.workerEfficiency,
-            moneyPerAction = stats.passiveMoney * stats.workerEfficiency;
+            launderingPerAction = (int)(stats.passiveLaundering * stats.workerEfficiency * stats.workerHappiness),
+            moneyPerAction = (int)(stats.passiveMoney * stats.workerEfficiency * stats.workerHappiness);
             
         // Passive
         stats.cleanMoney += moneyPerAction;
@@ -42,11 +44,14 @@ public class PlayerData : MonoBehaviour {
         stats.dirtyMoney -= launderedMoneyThisTurn;
         stats.cleanMoney += launderedMoneyThisTurn;
 
-        ui.UpdateStats(stats.cleanMoney, stats.dirtyMoney, moneyPerAction, launderingPerAction);
+        int passiveBonus = moneyPerAction - stats.passiveMoney;
+        int launderingBonus = launderingPerAction - stats.passiveLaundering;
+        ui.UpdateStatsWithBonus(stats.cleanMoney, stats.dirtyMoney, stats.passiveMoney, passiveBonus, stats.passiveLaundering, launderingBonus);
     }
 
     public void MoveAggression(int value) {
         Aggression += value;
+        Aggression = Mathf.Clamp(Aggression, 0, 100);
 
         ui.UpdateAggression(Aggression);
         if (Aggression >= 100) SceneManager.LoadScene(2);

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ShopItem : MonoBehaviour {
-    [SerializeField, Space] private ShopManager manager;
+    [SerializeField] private ShopManager manager;
     
     [SerializeField] private float collapsedSize, expandedSize;
     [SerializeField] private TMP_Text nameText, costText, descriptionText;

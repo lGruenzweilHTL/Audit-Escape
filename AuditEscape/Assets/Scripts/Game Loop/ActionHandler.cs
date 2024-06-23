@@ -81,7 +81,7 @@ public class ActionHandler : MonoBehaviour
         }
 
         var obj = Instantiate(actionPrefab, cardParent);
-
+        
         currentAction = GetAction(player.Aggression);
         obj.Init(currentAction, this);
         actionObject = obj.gameObject;
@@ -99,12 +99,12 @@ public class ActionHandler : MonoBehaviour
 
         for (int i = 0; i < actions.Length; i++)
         {
-            SerializedAction currentAction = actions[i];
-            float percent = currentAction.Percentage;
+            SerializedAction currAction = actions[i];
+            float percent = currAction.Percentage;
             if (random >= countedPercentage && random < countedPercentage + percent)
             {
                 previousWasAudit = false;
-                return currentAction;
+                return currAction;
             }
 
             countedPercentage += percent;

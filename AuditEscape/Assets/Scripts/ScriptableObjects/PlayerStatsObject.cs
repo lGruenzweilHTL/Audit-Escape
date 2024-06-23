@@ -20,13 +20,13 @@ public class PlayerStatsObject : ScriptableObject {
     
     [Header("Shop items")]
     [Tooltip("The efficiency of your workers")]
-    public int workerEfficiency = 1;
+    public float workerEfficiency = 1;
 
     [Tooltip("How happy your workers are")]
     public float workerHappiness = 1;
 
     [Tooltip("The relative decrease of audit difficulty")]
-    public float auditDifficultyDecrease = 0;
+    public int auditDifficultyDecrease = 0;
 
     [Tooltip("The suspicion you get every action (even if it was denied)")]
     public int passiveSuspicion = 2;
