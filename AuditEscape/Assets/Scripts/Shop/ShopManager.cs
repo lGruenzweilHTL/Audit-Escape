@@ -25,11 +25,17 @@ public class ShopManager : MonoBehaviour {
         shopWindow.SetActive(active);
     }
 
-    public void UpgradeItem(int item, int cost) {
+    // Returns: if the purchase was successful
+    public bool UpgradeItem(int item, int cost, int currLevel, int maxLevel) {
         if (playerStats.cleanMoney < cost) {
-            Debug.Log(
-                $"Player tried to buy upgrade {item} for {cost} coins. They had {playerStats.cleanMoney} which is not enough");
-            return;
+            Debug.Log($"Player tried to buy upgrade {item} for {cost} coins. They had {playerStats.cleanMoney} which is not enough");
+            return false;
+        }
+
+        // Check if the player has already reached the max level
+        if (maxLevel != -1 && currLevel >= maxLevel) {
+            Debug.Log($"Player tried to buy upgrade {item} for {cost} coins. They already reached the max level");
+            return false;
         }
 
         playerStats.cleanMoney -= cost;
@@ -46,6 +52,7 @@ public class ShopManager : MonoBehaviour {
                 break;
             case 3: // PassiveSuspicion
                 playerStats.passiveSuspicion += passiveSuspicionUpgrade;
+                playerStats.passiveSuspicion = Mathf.Clamp(playerStats.passiveSuspicion, 1, int.MaxValue);
                 break;
             case 4: // SuspicionDecrease (once)
                 playerStats.aggression -= oneTimeSuspicionReduce;
@@ -53,5 +60,7 @@ public class ShopManager : MonoBehaviour {
             default:
                 throw new System.ArgumentOutOfRangeException(nameof(item), item, null);
         }
+
+        return true;
     }
 }

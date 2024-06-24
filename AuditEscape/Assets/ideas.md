@@ -48,6 +48,7 @@ One of these events appears every 8-15 actions
 
 
 # Roadmap
-- Make the shop upgrades actually do something
+- Make the shop upgrades actually do something (**DONE**)
 - Implement random events
 - Make Happiness and paying system
+- Ads

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c57b93940298f042aaff8229faa2f19, type: 3}
   m_Name: PlayerStats
   m_EditorClassIdentifier: 
-  cleanMoney: 6191
+  cleanMoney: 200
   dirtyMoney: 0
-  passiveMoney: 130
-  passiveLaundering: 600
-  aggression: 7
-  workerEfficiency: 5.5
-  workerHappiness: 1.25
-  auditDifficultyDecrease: 1
-  passiveSuspicion: -1
+  passiveMoney: 0
+  passiveLaundering: 200
+  aggression: 18
+  workerEfficiency: 1
+  workerHappiness: 1
+  auditDifficultyDecrease: 0
+  passiveSuspicion: 2

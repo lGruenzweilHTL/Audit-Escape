@@ -92,17 +92,19 @@ public class ActionHandler : MonoBehaviour
         float maxPercentage = _auditAction.Percentage * aggression * auditCurve.Evaluate(aggression / 100f);
         if (previousWasAudit) maxPercentage = 0;
         float countedPercentage = 0;
+        
+        print($"Previous action was audit: {previousWasAudit}");
+        print($"Current chance of audit: {maxPercentage}");
 
         for (int i = 0; i < actions.Length; i++) maxPercentage += actions[i].Percentage;
 
         float random = Random.Range(0, maxPercentage);
 
-        for (int i = 0; i < actions.Length; i++)
-        {
-            SerializedAction currAction = actions[i];
+        foreach (SerializedAction currAction in actions) {
             float percent = currAction.Percentage;
             if (random >= countedPercentage && random < countedPercentage + percent)
             {
+                print($"Action chosen: {currAction.Title}");
                 previousWasAudit = false;
                 return currAction;
             }
@@ -110,6 +112,7 @@ public class ActionHandler : MonoBehaviour
             countedPercentage += percent;
         }
 
+        print("Audit chosen");
         previousWasAudit = true;
         return _auditAction;
     }

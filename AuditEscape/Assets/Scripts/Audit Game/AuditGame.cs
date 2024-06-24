@@ -9,27 +9,29 @@ public class AuditGame : MonoBehaviour
     const int NUM_SEQUENCES = 5;
 
     [SerializeField] private PlayerData player;
+    [SerializeField] private PlayerStatsObject playerStats;
     [SerializeField] private Image[] buttonFlashes;
     [SerializeField] private Button[] buttons;
     
     [Header("Aggression Values")]
     [SerializeField] private int aggressionWonNoWl = -10;
     [SerializeField] private int aggressionWonWl = -30;
-    [SerializeField] private float aggressionMultiplierLost = 50;
+    [SerializeField] private float aggressionMultiplierLost = 10;
 
 
     private Queue<int> sequence;
 
+    private int numSequences;
     private bool isLastSequence;
     private bool sequenceFinished = true;
     private int registeredButtonsThisSequence;
     private static readonly int FlashAnimation = Animator.StringToHash("Flash");
 
-    private async void OnEnable()
-    {
+    private async void OnEnable() {
+        numSequences = NUM_SEQUENCES - playerStats.auditDifficultyDecrease;
         sequence = new Queue<int>();
         sequenceFinished = true;
-        for (int i = 0; i < NUM_SEQUENCES; i++)
+        for (int i = 0; i < numSequences; i++)
         {
             while (!sequenceFinished) await Task.Yield();
             sequenceFinished = false;
@@ -64,7 +66,7 @@ public class AuditGame : MonoBehaviour
         int correctNumber = sequence.ToArray()[registeredButtonsThisSequence];
         registeredButtonsThisSequence++;
 
-        isLastSequence = sequence.Count == NUM_SEQUENCES;
+        isLastSequence = sequence.Count == numSequences;
         sequenceFinished = registeredButtonsThisSequence == sequence.Count;
 
         if (number == correctNumber && isLastSequence && sequenceFinished)
@@ -86,10 +88,8 @@ public class AuditGame : MonoBehaviour
         }
     }
 
-    private int GetAggressionOnLost()
-    {
-        int progress = sequence.Count;
-        return (int)(1f / progress * aggressionMultiplierLost);
+    private int GetAggressionOnLost() {
+        return (int)(aggressionMultiplierLost * sequence.Count);
     }
 
     private void ResetFlashes()

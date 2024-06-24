@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -6,14 +5,18 @@ using UnityEngine.UI;
 
 public class ShopItem : MonoBehaviour {
     [SerializeField] private ShopManager manager;
-    
+
     [SerializeField] private float collapsedSize, expandedSize;
-    [SerializeField] private TMP_Text nameText, costText, descriptionText;
+    [SerializeField] private TMP_Text nameText, costText, descriptionText, levelText;
     [SerializeField] private Button dropdownButton, buyButton;
     [SerializeField] private string title;
     [SerializeField, TextArea(2, 3)] private string description;
     [SerializeField] private int cost, upgradeIndex;
 
+    [Tooltip("Set to -1 for infinite levels"), SerializeField]
+    private int maxLevel;
+
+    private int currLevel = 0;
     private bool isExpanded;
     private RectTransform rect;
 
@@ -36,16 +39,25 @@ public class ShopItem : MonoBehaviour {
             Debug.LogError($"ShopManager of item {name} has not been assigned. Initialization will not be done", this);
             return;
         }
-        
-        buyButton.onClick.AddListener(() => manager.UpgradeItem(upgradeIndex, cost));
+
+        buyButton.onClick.AddListener(() => {
+            if (manager.UpgradeItem(upgradeIndex, cost, currLevel, maxLevel)) {
+                currLevel++;
+                SetLevelText();
+            }
+        });
+
         ApplyValues();
         dropdownButton.onClick.AddListener(ToggleExpand);
+        SetLevelText();
     }
+
+    private void SetLevelText() => levelText.text = maxLevel == -1 ? "∞" : $"{currLevel}/{maxLevel}";
 
     private void ToggleExpand() {
         isExpanded = !isExpanded;
         if (!isExpanded) descriptionText.gameObject.SetActive(false);
-        
+
         Vector2 targetSize = new(rect.rect.size.x, isExpanded ? expandedSize : collapsedSize);
         GetComponent<RectTransform>().DOSizeDelta(targetSize, 0.2f).onComplete +=
             () => descriptionText.gameObject.SetActive(isExpanded);
