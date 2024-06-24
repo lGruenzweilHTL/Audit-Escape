@@ -3700,8 +3700,8 @@ MonoBehaviour:
     CleanMoneyAdded: 100
     DirtyMoneyAdded: 0
     AggressionGained: 0
-    CanDeny: 1
     IsPassive: 0
+    CanDeny: 1
     Percentage: 50
   - Title: Launder Money
     Description: Earn {1}$ by laundering money
@@ -3712,8 +3712,8 @@ MonoBehaviour:
     CleanMoneyAdded: 0
     DirtyMoneyAdded: 1000
     AggressionGained: 10
-    CanDeny: 1
     IsPassive: 0
+    CanDeny: 1
     Percentage: 50
   - Title: Hire Worker
     Description: Earn an extra {0}$/action
@@ -3723,8 +3723,8 @@ MonoBehaviour:
     CleanMoneyAdded: 10
     DirtyMoneyAdded: 0
     AggressionGained: 0
-    CanDeny: 1
     IsPassive: 1
+    CanDeny: 1
     Percentage: 20
   - Title: Hire Launderer
     Description: Launder an extra {1}$/action
@@ -3735,9 +3735,47 @@ MonoBehaviour:
     CleanMoneyAdded: 0
     DirtyMoneyAdded: 100
     AggressionGained: 5
-    CanDeny: 1
     IsPassive: 1
+    CanDeny: 1
     Percentage: 20
+  randomEvents:
+  - Title: Sussy IRS (RE)
+    Description: A random event has caused the IRS to be more suspicious of you
+    Pros: []
+    Cons:
+    - +{2} suspicion
+    CleanMoneyAdded: 0
+    DirtyMoneyAdded: 0
+    AggressionGained: 20
+    IsPassive: 0
+  - Title: Lose workers (RE)
+    Description: A random event has caused you to lose some of your workers
+    Pros: []
+    Cons:
+    - '{0} $/action'
+    - '{1} laundered $/action'
+    CleanMoneyAdded: -50
+    DirtyMoneyAdded: -500
+    AggressionGained: 0
+    IsPassive: 1
+  - Title: Nice Guy (RE)
+    Description: A random event has caused the IRS to lose some suspicion
+    Pros:
+    - '{2} suspicion'
+    Cons: []
+    CleanMoneyAdded: 0
+    DirtyMoneyAdded: 0
+    AggressionGained: -15
+    IsPassive: 0
+  - Title: Rich Kid (RE)
+    Description: A random event has caused you to gain some money
+    Pros:
+    - +{0}$
+    Cons: []
+    CleanMoneyAdded: 2000
+    DirtyMoneyAdded: 0
+    AggressionGained: 0
+    IsPassive: 0
   player: {fileID: 891610744}
   actionPrefab: {fileID: 3318423724898093153, guid: cbd5041a3c0f65a4ea195eb2ecd3bcfe, type: 3}
   cardParent: {fileID: 2397710869493687122}
@@ -6808,7 +6846,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 891610744}
-  playerStats: {fileID: 0}
+  playerStats: {fileID: 11400000, guid: 389ed9d309cf4214297c3bb1c44c5f81, type: 2}
   buttonFlashes:
   - {fileID: 823573002}
   - {fileID: 1114354276}
@@ -10864,7 +10902,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 1297.9902}
+  m_SizeDelta: {x: 0, y: 1300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2955469142931505202
 MonoBehaviour:

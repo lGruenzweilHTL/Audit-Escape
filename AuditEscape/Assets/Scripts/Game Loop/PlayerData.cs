@@ -27,6 +27,10 @@ public class PlayerData : MonoBehaviour {
         if (action.IsPassive) {
             stats.passiveMoney += action.CleanMoneyAdded;
             stats.passiveLaundering += action.DirtyMoneyAdded;
+            
+            // Clamp the passive money and laundering to positive values only
+            stats.passiveMoney = Mathf.Max(0, stats.passiveMoney);
+            stats.passiveLaundering = Mathf.Max(0, stats.passiveLaundering);
         }
         else {
             stats.cleanMoney += action.CleanMoneyAdded;

@@ -52,7 +52,7 @@ public class ShopManager : MonoBehaviour {
                 break;
             case 3: // PassiveSuspicion
                 playerStats.passiveSuspicion += passiveSuspicionUpgrade;
-                playerStats.passiveSuspicion = Mathf.Clamp(playerStats.passiveSuspicion, 1, int.MaxValue);
+                playerStats.passiveSuspicion = Mathf.Max(playerStats.passiveSuspicion, 1);
                 break;
             case 4: // SuspicionDecrease (once)
                 playerStats.aggression -= oneTimeSuspicionReduce;

@@ -1,23 +1,23 @@
-using UnityEngine;
-
 [System.Serializable]
-public struct SerializedAction
-{
-    public string Title;
+public class SerializedAction : ActionEvent {
+    public SerializedAction() { }
 
-    [Tooltip("Replace the clean money with \"{0}\", the dirty money with \"{1}\" and the aggression with \"{2}\""), TextArea(3, 8)] 
-    public string Description;
+    public SerializedAction(ActionEvent baseAction) {
+        // Base values
+        AggressionGained = baseAction.AggressionGained;
+        CleanMoneyAdded = baseAction.CleanMoneyAdded;
+        DirtyMoneyAdded = baseAction.DirtyMoneyAdded;
+        Description = baseAction.Description;
+        Cons = baseAction.Cons;
+        Pros = baseAction.Pros;
+        Title = baseAction.Title;
+        IsPassive = baseAction.IsPassive;
 
-    [Tooltip("Replace the clean money with \"{0}\", the dirty money with \"{1}\" and the aggression with \"{2}\"")] 
-    public string[] Pros;
+        // Special values
+        CanDeny = false;
+        Percentage = 0;
+    }
 
-    [Tooltip("Replace the clean money with \"{0}\", the dirty money with \"{1}\" and the aggression with \"{2}\"")] 
-    public string[] Cons;
-
-    public int CleanMoneyAdded;
-    public int DirtyMoneyAdded;
-    public int AggressionGained;
     public bool CanDeny;
-    public bool IsPassive;
     public float Percentage;
 }

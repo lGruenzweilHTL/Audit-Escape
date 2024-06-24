@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,6 +10,7 @@ using Random = UnityEngine.Random;
 public class ActionHandler : MonoBehaviour
 {
     [SerializeField] private SerializedAction[] actions;
+    [SerializeField] private ActionEvent[] randomEvents;
 
     [SerializeField] private PlayerData player;
     [SerializeField] private ActionData actionPrefab;
@@ -23,9 +25,10 @@ public class ActionHandler : MonoBehaviour
     private SerializedAction currentAction;
     private GameObject actionObject;
 
-    private bool previousWasAudit = false;
+    private bool previousWasAudit;
+    private int nextRandomEvent;
 
-    private static SerializedAction _auditAction = new SerializedAction
+    private static readonly SerializedAction AuditAction = new()
     {
         Title = "Audit",
         Description = "You are getting audited. Watch out!",
@@ -40,26 +43,26 @@ public class ActionHandler : MonoBehaviour
 
     private void Start()
     {
-        _auditAction.Percentage = auditMultiplier;
-
-        // Build ActionMap
-        for (int i = 0; i < actions.Length; i++)
+        AuditAction.Percentage = auditMultiplier;
+        nextRandomEvent = Random.Range(8, 16);
+        
+        // Replace the placeholders in the actions
+        // Use the ReplaceMultiple function to replace multiple placeholders at once
+        foreach (SerializedAction action in actions)
         {
-            SerializedAction a = actions[i];
-            a.Description = a.Description.Replace("{0}", a.CleanMoneyAdded.ToString()).Replace("{1}", a.DirtyMoneyAdded.ToString()).Replace("{2}", a.AggressionGained.ToString());
-            for (int j = 0; j < a.Pros.Length; j++) a.Pros[j] = a.Pros[j].Replace("{0}", a.CleanMoneyAdded.ToString()).Replace("{1}", a.DirtyMoneyAdded.ToString()).Replace("{2}", a.AggressionGained.ToString());
-            for (int j = 0; j < a.Cons.Length; j++) a.Cons[j] = a.Cons[j].Replace("{0}", a.CleanMoneyAdded.ToString()).Replace("{1}", a.DirtyMoneyAdded.ToString()).Replace("{2}", a.AggressionGained.ToString());
-
-            actions[i] = a;
+            action.Description = ReplaceMultiple(action.Description, ("{0}", action.CleanMoneyAdded.ToString()), ("{1}", action.DirtyMoneyAdded.ToString()), ("{2}", action.AggressionGained.ToString()));
+            action.Pros = action.Pros.Select(s => ReplaceMultiple(s, ("{0}", action.CleanMoneyAdded.ToString()), ("{1}", action.DirtyMoneyAdded.ToString()), ("{2}", action.AggressionGained.ToString()))).ToArray();
+            action.Cons = action.Cons.Select(s => ReplaceMultiple(s, ("{0}", action.CleanMoneyAdded.ToString()), ("{1}", action.DirtyMoneyAdded.ToString()), ("{2}", action.AggressionGained.ToString()))).ToArray();
+        }
+        // Do the same with the random events
+        foreach (ActionEvent action in randomEvents)
+        {
+            action.Description = ReplaceMultiple(action.Description, ("{0}", action.CleanMoneyAdded.ToString()), ("{1}", action.DirtyMoneyAdded.ToString()), ("{2}", action.AggressionGained.ToString()));
+            action.Pros = action.Pros.Select(s => ReplaceMultiple(s, ("{0}", action.CleanMoneyAdded.ToString()), ("{1}", action.DirtyMoneyAdded.ToString()), ("{2}", action.AggressionGained.ToString()))).ToArray();
+            action.Cons = action.Cons.Select(s => ReplaceMultiple(s, ("{0}", action.CleanMoneyAdded.ToString()), ("{1}", action.DirtyMoneyAdded.ToString()), ("{2}", action.AggressionGained.ToString()))).ToArray();
         }
 
         NextAction();
-    }
-
-    [ContextMenu("Start Audit")]
-    public void StartAudit()
-    {
-        auditGame.SetActive(true);
     }
 
     public void Continue(bool accepted)
@@ -80,7 +83,7 @@ public class ActionHandler : MonoBehaviour
             actionObject.GetComponent<Animator>().SetTrigger(MoveOut);
         }
 
-        var obj = Instantiate(actionPrefab, cardParent);
+        ActionData obj = Instantiate(actionPrefab, cardParent);
         
         currentAction = GetAction(player.Aggression);
         obj.Init(currentAction, this);
@@ -89,36 +92,38 @@ public class ActionHandler : MonoBehaviour
 
     private SerializedAction GetAction(int aggression)
     {
-        float maxPercentage = _auditAction.Percentage * aggression * auditCurve.Evaluate(aggression / 100f);
+        // if a random event is scheduled, choose one from the array
+        if (nextRandomEvent-- == 0)
+        {
+            nextRandomEvent = Random.Range(8, 16);
+            return new SerializedAction(randomEvents[Random.Range(0, randomEvents.Length)]);
+        }
+        
+        float maxPercentage = AuditAction.Percentage * aggression * auditCurve.Evaluate(aggression / 100f);
         if (previousWasAudit) maxPercentage = 0;
         float countedPercentage = 0;
-        
-        print($"Previous action was audit: {previousWasAudit}");
-        print($"Current chance of audit: {maxPercentage}");
 
-        for (int i = 0; i < actions.Length; i++) maxPercentage += actions[i].Percentage;
+        maxPercentage += actions.Sum(a => a.Percentage);
 
         float random = Random.Range(0, maxPercentage);
 
+        // Choose an action based on the random number
         foreach (SerializedAction currAction in actions) {
-            float percent = currAction.Percentage;
-            if (random >= countedPercentage && random < countedPercentage + percent)
+            float chance = currAction.Percentage;
+            if (random >= countedPercentage && random < countedPercentage + chance)
             {
-                print($"Action chosen: {currAction.Title}");
                 previousWasAudit = false;
                 return currAction;
             }
 
-            countedPercentage += percent;
+            countedPercentage += chance;
         }
-
-        print("Audit chosen");
+        
         previousWasAudit = true;
-        return _auditAction;
+        return AuditAction;
     }
 
-
-    // TODO: implement replacement process with this function
+    // A more efficient function to replace multiple placeholders in a string
     private static string ReplaceMultiple(string s, params (string, string)[] replaceData) {
         StringBuilder result = new(s);
 

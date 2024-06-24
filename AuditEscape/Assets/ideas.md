@@ -42,8 +42,8 @@ One of these events appears every 8-15 actions
 - Decrease suspicion
 - Make money
 - Lose money
-- Increase worker efficiency
-- Decrease worker efficiency
+- Gain worker efficiency
+- Lose worker efficiency
 - Shop sales
 
 
