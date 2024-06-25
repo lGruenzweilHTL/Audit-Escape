@@ -12,6 +12,7 @@ public class SerializedAction : ActionEvent {
         Pros = baseAction.Pros;
         Title = baseAction.Title;
         IsPassive = baseAction.IsPassive;
+        WorkerEfficiency = baseAction.WorkerEfficiency;
 
         // Special values
         CanDeny = false;

@@ -3,8 +3,7 @@
 ## Features
 - Audit gets more difficult the more aggression you have
 - Workers need to be paid to work (pay every 10 actions, can choose how much to pay, happiness system)
-- Passive suspicion (increases with earned money, to stop players from always denying)
-- Random events every 8-15 actions
+- Multiple variations for audits
 
 ### Different types of workers
 - Default (make money)
@@ -13,7 +12,7 @@
 - Spy (makes no money, secret, increases passive suspicion, only when on watchlist)
 
 ### Locations
-You can buy locations to wash your money. 
+You can buy locations to launder your money. 
 You can own multiple locations, but you have to check up on all of them.
 Locations have different passive suspicion rates.
 
@@ -25,30 +24,13 @@ Unhappy workers will work less and will quit if a certain threshold is reached.
 #### Quitting Workers
 You will lose this worker and also need to pay a fine. 
 The fine needs to be high enough that you don't want your workers to quit
-
-## Shop
-- Can reduce audit difficulty with money (bribes)
-- Increase workers happiness (happiness increases efficiency)
-- Meth (increase worker efficiency drastically for 10 actions)
-- Decrease passive suspicion
     
 ## Cards
 - Pay your workers
-
-### Random events
-One of these events appears every 8-15 actions
-- Lose workers
-- Raise suspicion
-- Decrease suspicion
-- Make money
-- Lose money
-- Gain worker efficiency
-- Lose worker efficiency
-- Shop sales
-
+- Buy a new location
 
 # Roadmap
-- Make the shop upgrades actually do something (**DONE**)
-- Implement random events
 - Make Happiness and paying system
 - Ads
+- Tutorial
+- Implement locations

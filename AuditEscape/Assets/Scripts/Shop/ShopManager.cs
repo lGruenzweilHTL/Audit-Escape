@@ -14,6 +14,18 @@ public class ShopManager : MonoBehaviour {
     [SerializeField] private int passiveSuspicionUpgrade = -1,
         oneTimeSuspicionReduce = 25;
 
+    public float DiscountMultiplier {
+        get => discount;
+        set {
+            discount = value;
+            OnDiscountChanged?.Invoke();
+        }
+    }
+
+    private float discount = 1;
+
+    public event System.Action OnDiscountChanged; 
+    
     public void ToggleShopWindow() {
         UI.Instance.UpdateStatsWithBonus(playerStats);
         bool active = !shopWindow.activeSelf;
@@ -27,6 +39,9 @@ public class ShopManager : MonoBehaviour {
 
     // Returns: if the purchase was successful
     public bool UpgradeItem(int item, int cost, int currLevel, int maxLevel) {
+        // Calculate the cost with the discount
+        cost = (int)(cost * DiscountMultiplier);
+        
         if (playerStats.cleanMoney < cost) {
             Debug.Log($"Player tried to buy upgrade {item} for {cost} coins. They had {playerStats.cleanMoney} which is not enough");
             return false;

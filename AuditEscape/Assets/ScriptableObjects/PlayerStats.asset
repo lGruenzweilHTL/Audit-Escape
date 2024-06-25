@@ -20,4 +20,4 @@ MonoBehaviour:
   workerEfficiency: 1
   workerHappiness: 1
   auditDifficultyDecrease: 0
-  passiveSuspicion: -2
+  passiveSuspicion: 2

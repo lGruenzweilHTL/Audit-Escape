@@ -23,6 +23,7 @@ public class PlayerData : MonoBehaviour {
 
         // Active
         MoveAggression(action.AggressionGained);
+        stats.workerEfficiency = Mathf.Max(stats.workerEfficiency + action.WorkerEfficiency, 1);
 
         if (action.IsPassive) {
             stats.passiveMoney += action.CleanMoneyAdded;

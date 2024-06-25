@@ -24,7 +24,7 @@ public class ShopItem : MonoBehaviour {
     private void ApplyValues() {
         nameText.text = title;
         descriptionText.text = description;
-        costText.text = $"{cost} €";
+        costText.text = $"{cost * manager.DiscountMultiplier} €";
         dropdownButton.onClick.RemoveAllListeners();
         descriptionText.gameObject.SetActive(false);
         GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, collapsedSize);
@@ -36,7 +36,7 @@ public class ShopItem : MonoBehaviour {
 
     private void Start() {
         if (manager == null) {
-            Debug.LogError($"ShopManager of item {name} has not been assigned. Initialization will not be done", this);
+            Debug.LogError($"ShopManager of item {name} has not been assigned. Will not initialize", this);
             return;
         }
 
@@ -46,6 +46,7 @@ public class ShopItem : MonoBehaviour {
                 SetLevelText();
             }
         });
+        manager.OnDiscountChanged += ApplyValues;
 
         ApplyValues();
         dropdownButton.onClick.AddListener(ToggleExpand);
