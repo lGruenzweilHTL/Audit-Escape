@@ -15,22 +15,11 @@
 You can buy locations to launder your money. 
 You can own multiple locations, but you have to check up on all of them.
 Locations have different passive suspicion rates.
-
-### Happiness System
-You can choose how much you want to pay your workers. 
-If the pay is bad, they will become unhappy.
-Unhappy workers will work less and will quit if a certain threshold is reached.
-
-#### Quitting Workers
-You will lose this worker and also need to pay a fine. 
-The fine needs to be high enough that you don't want your workers to quit
     
 ## Cards
-- Pay your workers
 - Buy a new location
 
 # Roadmap
-- Make Happiness and paying system
 - Ads
 - Tutorial
 - Implement locations

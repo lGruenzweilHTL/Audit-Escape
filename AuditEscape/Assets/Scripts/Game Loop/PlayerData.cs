@@ -3,13 +3,12 @@ using UnityEngine.SceneManagement;
 
 public class PlayerData : MonoBehaviour {
     [SerializeField] private ActionHandler actionHandler;
-    [SerializeField] private UI ui;
     [SerializeField] private PlayerStatsObject stats;
     [Space, SerializeField] private int watchlistThreshold = 50;
 
-    public int Aggression {
+    private int Aggression {
         get => stats.aggression;
-        private set => stats.aggression = value;
+        set => stats.aggression = value;
     }
 
     private void Start() {
@@ -23,7 +22,7 @@ public class PlayerData : MonoBehaviour {
 
         // Active
         MoveAggression(action.AggressionGained);
-        stats.workerEfficiency = Mathf.Max(stats.workerEfficiency + action.WorkerEfficiency, 1);
+        stats.workerEfficiency += action.WorkerEfficiency;
 
         if (action.IsPassive) {
             stats.passiveMoney += action.CleanMoneyAdded;
@@ -38,9 +37,10 @@ public class PlayerData : MonoBehaviour {
             stats.dirtyMoney += action.DirtyMoneyAdded;
         }
 
+        float avgEfficiency = (stats.workerEfficiency + stats.workerHappiness) / 2;  
         int dirtyMoney = stats.dirtyMoney,
-            launderingPerAction = (int)(stats.passiveLaundering * stats.workerEfficiency * stats.workerHappiness),
-            moneyPerAction = (int)(stats.passiveMoney * stats.workerEfficiency * stats.workerHappiness);
+            launderingPerAction = (int)(stats.passiveLaundering * avgEfficiency),
+            moneyPerAction = (int)(stats.passiveMoney * avgEfficiency);
             
         // Passive
         stats.cleanMoney += moneyPerAction;
@@ -51,14 +51,14 @@ public class PlayerData : MonoBehaviour {
 
         int passiveBonus = moneyPerAction - stats.passiveMoney;
         int launderingBonus = launderingPerAction - stats.passiveLaundering;
-        ui.UpdateStatsWithBonus(stats.cleanMoney, stats.dirtyMoney, stats.passiveMoney, passiveBonus, stats.passiveLaundering, launderingBonus);
+        UI.Instance.UpdateStatsWithBonus(stats.cleanMoney, stats.dirtyMoney, stats.passiveMoney, passiveBonus, stats.passiveLaundering, launderingBonus);
     }
 
     public void MoveAggression(int value) {
         Aggression += value;
         Aggression = Mathf.Clamp(Aggression, 0, 100);
 
-        ui.UpdateAggression(Aggression);
+        UI.Instance.UpdateAggression(Aggression);
         if (Aggression >= 100) SceneManager.LoadScene(2);
     }
 

@@ -32,15 +32,18 @@ public class ActionData : MonoBehaviour
 
         acceptButton.onClick.AddListener(() =>
         {
-            actionHandler.Continue(true);
-            acceptButton.enabled = false;
-            denyButton.enabled = false;
+            ContinueAction(true, actionHandler);
         });
         denyButton.onClick.AddListener(() =>
         {
-            actionHandler.Continue(false);
-            acceptButton.enabled = false;
-            denyButton.enabled = false;
+            ContinueAction(false, actionHandler);
         });
+    }
+    
+    protected virtual void ContinueAction(bool accepted, ActionHandler actionHandler)
+    {
+        actionHandler.Continue(accepted);
+        acceptButton.enabled = false;
+        denyButton.enabled = false;
     }
 }
