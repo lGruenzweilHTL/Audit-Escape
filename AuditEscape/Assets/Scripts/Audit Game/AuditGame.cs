@@ -40,9 +40,14 @@ public class AuditGame : MonoBehaviour
 
             foreach (Button item in buttons) item.enabled = false;
 
-            await Task.Delay(1000);
-
-            sequence.Enqueue(Random.Range(1, 10));
+            await Task.Delay(750);
+            
+            int nextValue;
+            do {
+                nextValue = Random.Range(1, 10);
+            } while(sequence.Count > 0 && sequence.Contains(nextValue));
+            
+            sequence.Enqueue(nextValue);
 
             PlaySequence(sequence);
         }
@@ -54,7 +59,7 @@ public class AuditGame : MonoBehaviour
         {
             int number = seq.ToArray()[i];
             buttonFlashes[number].GetComponent<Animator>().SetTrigger(FlashAnimation);
-            if (i < seq.Count - 1) await Task.Delay(1500);
+            if (i < seq.Count - 1) await Task.Delay(250);
         }
 
         foreach (Button item in buttons) item.enabled = true;

@@ -66,14 +66,18 @@ public class ActionHandler : MonoBehaviour {
         NextAction();
     }
 
-    public void Continue(bool accepted) {
+    public async void Continue(bool accepted) {
         OnActionFinished?.Invoke(currentAction, accepted);
-
+        
+        if (currentAction.Equals(new SerializedAction(ShopSaleEvent))) shop.DiscountMultiplier = 0.7f;
         if (currentAction.Equals(AuditAction)) auditGame.SetActive(true);
-        if (currentAction.Equals(WorkerPaymentAction)) {
-            paymentSystem.SetMaxPayment(playerStats.cleanMoney);
-            paymentSystem.gameObject.SetActive(true);
+        if (currentAction.Equals(WorkerPaymentAction)) await paymentSystem.Activate(playerStats.cleanMoney);
+        if (currentAction.Title == "Launder All") {
+            playerStats.cleanMoney += playerStats.dirtyMoney;
+            playerStats.dirtyMoney = 0;
+            UI.Instance.UpdateStatsWithBonus(playerStats);
         }
+        
         NextAction();
     }
 
@@ -137,7 +141,6 @@ public class ActionHandler : MonoBehaviour {
         int index = Random.Range(0, randomEvents.Length + 1);
 
         if (index == randomEvents.Length && !previousWasShopSale) {
-            shop.DiscountMultiplier = 0.7f;
             previousWasShopSale = true;
             return new SerializedAction(ShopSaleEvent);
         }
@@ -147,10 +150,11 @@ public class ActionHandler : MonoBehaviour {
     }
 
     private float CalculateMaxPercentage(int aggression) {
-        float maxPercentage = AuditAction.Percentage * aggression * auditCurve.Evaluate(aggression / 100f);
-        if (previousWasAudit) maxPercentage = 0;
-        maxPercentage += actions.Sum(a => a.Percentage);
-        return maxPercentage;
+        return GetAuditChance(aggression) + actions.Sum(a => a.Percentage);;
+    }
+
+    public float GetAuditChance(int aggression) {
+        return previousWasAudit ? 0 : AuditAction.Percentage * aggression * auditCurve.Evaluate(aggression / 100f);
     }
 
     private SerializedAction ChooseActionBasedOnRandomNumber(float random) {

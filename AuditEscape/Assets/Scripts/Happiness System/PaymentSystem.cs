@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,15 +7,26 @@ public class PaymentSystem : MonoBehaviour {
     [SerializeField] private PlayerStatsObject playerStats;
     [SerializeField] private Slider paymentSlider;
     [SerializeField] private TMP_Text sliderValueText;
+    private event System.Action OnPaymentConfirmed; 
     private int chosenPay;
     private int maxPay;
+    
+    public async Task Activate(int maxPayment) {
+        SetMaxPayment(maxPayment);
+        gameObject.SetActive(true);
+        
+        // Wait for OnPaymentConfirmed to be invoked
+        TaskCompletionSource<bool> tcs = new();
+        OnPaymentConfirmed += () => tcs.TrySetResult(true);
+        await tcs.Task;
+    }
 
     private void SetDefaultSliderValue() {
         paymentSlider.value = paymentSlider.maxValue / 2;
         ChoosePay(paymentSlider.value);
     }
 
-    public void SetMaxPayment(float max) {
+    private void SetMaxPayment(float max) {
         maxPay = (int)max;
         paymentSlider.maxValue = maxPay;
         SetDefaultSliderValue();
@@ -32,6 +44,8 @@ public class PaymentSystem : MonoBehaviour {
         playerStats.workerHappiness += CalculateHappiness(chosenPay, maxPay);
         
         UI.Instance.UpdateStatsWithBonus(playerStats);
+        
+        OnPaymentConfirmed?.Invoke();
     }
 
     private static float CalculateHappiness(int paid, int max) {

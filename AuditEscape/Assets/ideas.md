@@ -20,6 +20,7 @@ Locations have different passive suspicion rates.
 - Buy a new location
 
 # Roadmap
+- Sounds and Music
 - Ads
 - Tutorial
 - Implement locations
