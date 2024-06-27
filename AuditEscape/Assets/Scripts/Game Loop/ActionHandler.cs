@@ -72,7 +72,7 @@ public class ActionHandler : MonoBehaviour {
         if (currentAction.Equals(new SerializedAction(ShopSaleEvent))) shop.DiscountMultiplier = 0.7f;
         if (currentAction.Equals(AuditAction)) auditGame.SetActive(true);
         if (currentAction.Equals(WorkerPaymentAction)) await paymentSystem.Activate(playerStats.cleanMoney);
-        if (currentAction.Title == "Launder All") {
+        if (currentAction.Title == "Launder All" && accepted) {
             playerStats.cleanMoney += playerStats.dirtyMoney;
             playerStats.dirtyMoney = 0;
             UI.Instance.UpdateStatsWithBonus(playerStats);

@@ -8360,7 +8360,7 @@ MonoBehaviour:
   title: Worker Happiness
   description: Increase the happiness of your workers by installing new equipment.
   cost: 500
-  upgradeIndex: 1
+  upgradeIndex: 2
   maxLevel: 20
 --- !u!114 &1552781277
 MonoBehaviour:
@@ -10184,7 +10184,7 @@ MonoBehaviour:
   description: Increase the efficiency of your workers drastically for 10 minutes
     with illegal substances. This is extremely dangerous.
   cost: 1000
-  upgradeIndex: 2
+  upgradeIndex: 1
   maxLevel: 10
 --- !u!114 &1772746613
 MonoBehaviour:

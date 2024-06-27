@@ -40,7 +40,7 @@ public class AuditGame : MonoBehaviour
 
             foreach (Button item in buttons) item.enabled = false;
 
-            await Task.Delay(750);
+            await Task.Delay(1000);
             
             int nextValue;
             do {
